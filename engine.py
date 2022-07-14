@@ -1,16 +1,57 @@
+import pygame
+import random
+from pygame import event
+from pygame.constants import USEREVENT
+from handle_score import write_score
+
+from pygame.time import set_timer
+from wall import Wall
+
+import json
+
+import sys, os
+script_dir = sys.path[0]
+
+#Sprite loading
+spaceship = os.path.join(script_dir, './assets/sprite/spaceship.png')
+spaceship_accelerate = os.path.join(script_dir, './assets/sprite/spaceship_accelerate.png')
+multishot = os.path.join(script_dir, './assets/sprite/multishot.png')
+ricochet = os.path.join(script_dir, './assets/sprite/ricochet.png')
+
+wall_x = os.path.join(script_dir, './assets/sprite/wall_x.png')
+wall_y = os.path.join(script_dir, './assets/sprite/wall_y.png')
+
+enemy = os.path.join(script_dir, './assets/sprite/enemy.png')
+enemy2 = os.path.join(script_dir, './assets/sprite/enemy2.png')
+
+coin = os.path.join(script_dir, './assets/sprite/coin.png')
+boost = os.path.join(script_dir, './assets/sprite/boost.png')
+
+bkg_sprite = os.path.join(script_dir, './assets/sprite/bkg.png')
+projectile = os.path.join(script_dir, './assets/sprite/projectile.png')
+projectile2 = os.path.join(script_dir, './assets/sprite/projectile_2.png')
+
+#Audio loading 
+blaster_sound = os.path.join(script_dir, './assets/audio/blaster_sound.mp3') 
+explosion_sound = os.path.join(script_dir, './assets/audio/explosion_sound.mp3')
+
+#Audio play function 
+def blast():
+        blast = pygame.mixer.Sound(blaster_sound)
+        blast.play()
+def explosion():
+    explosion = pygame.mixer.Sound(explosion_sound)
+    explosion.play()
+
+#Open settings.json
+with open('settings.json', 'r') as f:
+    settings = json.load(f)
+wall_prop = settings["wall_properties"]
+em1_range = settings["enemy_1_shoot_range"]
+
 def game():
-    import pygame
-    import random
-    from pygame import event
-    from pygame.constants import USEREVENT
-    from handle_score import write_score
 
-    from pygame.time import set_timer
-
-    normal_spaceship = pygame.image.load("spaceship.png").convert()
-    accelerated_spaceship = pygame.image.load("spaceship_accelerate.png").convert()
-
-    state = [pygame.image.load("spaceship.png").convert_alpha(), pygame.image.load("spaceship_accelerate.png").convert_alpha(),pygame.image.load("multishot.png").convert_alpha(),pygame.image.load("ricochet.png").convert_alpha()]
+    state = [pygame.image.load(spaceship).convert_alpha(), pygame.image.load(spaceship_accelerate).convert_alpha(),pygame.image.load(multishot).convert_alpha(),pygame.image.load(ricochet).convert_alpha()]
     '''
     USEREVENT 
     0 :boost group
@@ -22,31 +63,11 @@ def game():
 
     screen_rect = pygame.Rect((0, 0), (800, 600))
     myfont = pygame.font.SysFont("monospace", 16)
-    def blast():
-        blast = pygame.mixer.Sound("blaster_sound.mp3")
-        blast.play()
-    def explosion():
-        explosion = pygame.mixer.Sound("explosion_sound.mp3")
-        explosion.play()
 
-    class Wall(pygame.sprite.Sprite):
-        def __init__(self,x_len,y_len,x_pos,y_pos):
-            super().__init__()
-            if x_len > y_len :
-                image = pygame.image.load("wall_x.png").convert_alpha()
-                self.image = pygame.transform.scale(image, (x_len,y_len))
-            if x_len < y_len :
-                image = pygame.image.load("wall_y.png").convert_alpha()
-                self.image = pygame.transform.scale(image, (x_len,y_len))
-            self.rect = self.image.get_rect(center=(x_pos, y_pos))
-            self.pos = pygame.Vector2(self.rect.center)
-
-    list_wall = [
-    Wall(200,50,400,150),
-    Wall(200,50,400,450),
-    Wall(50,200,100,300),
-    Wall(50,200,700,300),
-    ]
+    #The wall props are : x_len, y_len, x_pos, y_pos in that order 
+    list_wall = []
+    for wall in wall_prop:
+        list_wall.append(Wall(wall, wall_x, wall_y))
     wall_group = pygame.sprite.Group()
         
     for wall in list_wall:
@@ -56,7 +77,7 @@ def game():
         def __init__(self):
             super().__init__()
             #self.image = pygame.Surface((32, 32))
-            self.image = pygame.image.load("enemy.png").convert_alpha()
+            self.image = pygame.image.load(enemy).convert_alpha()
             self.org_image = self.image.copy()
             self.angle = 0
             self.direction = pygame.Vector2(1, 0)
@@ -97,7 +118,7 @@ def game():
                 self.kill()
                 explosion()
                 death_count = pygame.time.set_timer(pygame.USEREVENT+7, 500, True)
-            if x-1 <= self.pos.x <= x+1 or y-1 <= self.pos.y <= y+1 :
+            if x-em1_range <= self.pos.x <= x+em1_range or y-em1_range <= self.pos.y <= y+em1_range :
                 now = pygame.time.get_ticks()
                 if now - self.last >= self.cooldown:
                     self.last = now
@@ -112,7 +133,7 @@ def game():
     class Enemy2(pygame.sprite.Sprite):
         def __init__(self):
             super().__init__()
-            self.image = pygame.image.load("enemy2.png").convert_alpha()
+            self.image = pygame.image.load(enemy2).convert_alpha()
             self.org_image = self.image.copy()
             self.rect = self.image.get_rect(center=(random.randint(0,800), random.randint(0,600)))
             self.pos = pygame.Vector2(self.rect.center)
@@ -145,7 +166,7 @@ def game():
     class Coin(pygame.sprite.Sprite):
         def __init__(self):
             super().__init__()
-            self.image = pygame.image.load("coin.png").convert_alpha()
+            self.image = pygame.image.load(coin).convert_alpha()
             self.rect = self.image.get_rect(center=(random.randint(0,800), random.randint(0,600)))
             self.pos = pygame.Vector2(self.rect.center)
             
@@ -160,7 +181,7 @@ def game():
     class Boost(pygame.sprite.Sprite):
         def __init__(self):
             super().__init__()
-            self.image = pygame.image.load("boost.png").convert_alpha()
+            self.image = pygame.image.load(boost).convert_alpha()
             self.type = random.choice(['multishot', 'accelerate','ricochet'])
             self.rect = self.image.get_rect(center=(random.randint(0,800), random.randint(0,600)))
             self.pos = pygame.Vector2(self.rect.center)
@@ -368,7 +389,7 @@ def game():
     class Projectile(pygame.sprite.Sprite):
         def __init__(self, pos, direction,size=(8,8),ricochet = False):
             super().__init__()
-            self.image = pygame.image.load("projectile.png").convert_alpha()
+            self.image = pygame.image.load(projectile).convert_alpha()
             self.rect = self.image.get_rect(center=pos)
             self.direction = direction
             self.pos = pygame.Vector2(self.rect.center)
@@ -422,7 +443,7 @@ def game():
     class Projectile2(pygame.sprite.Sprite):
         def __init__(self, pos, direction,size=(8,8)):
             super().__init__()
-            self.image = pygame.image.load("projectile_2.png").convert_alpha()
+            self.image = pygame.image.load(projectile2).convert_alpha()
             self.rect = self.image.get_rect(center=pos)
             self.direction = direction
             self.pos = pygame.Vector2(self.rect.center)
@@ -444,7 +465,7 @@ def game():
         screen = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("arena shooter")
         enemy_spawn = pygame.time.set_timer(pygame.USEREVENT+3, 8000)
-        bkg = pygame.image.load("bkg.png").convert_alpha()
+        bkg = pygame.image.load(bkg_sprite).convert_alpha()
         bkg = pygame.transform.scale(bkg,(800,600))
         clock = pygame.time.Clock()
         dt = 0
