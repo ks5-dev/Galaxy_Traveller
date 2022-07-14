@@ -19,3 +19,7 @@ In this patch I reformat some part of the code.
 
 Anyways here is an screenshot of the game:
 ![Screenshot](./demo/screenshot1.png)
+
+## Running the project
+Dependencies: pygame
+Run `menu.py` to start the game
