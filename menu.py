@@ -1,4 +1,4 @@
-import pygame, sys, os ,engine
+import pygame, sys, os, engine #engine_exec
 from handle_score import receive_score
 from pygame.locals import *
 
@@ -6,12 +6,20 @@ mainClock = pygame.time.Clock()
 
 pygame.init()
 pygame.display.set_caption('game base')
+
 screen = pygame.display.set_mode((800, 600),0,32)
 
-futura_font = os.path.join(sys.path[0], './assets/fonts/futura.ttf')
+script_dir = sys.path[0]
+#Uncomment the upcoming line if you want to create an executable run from the executable
+#script_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+futura_font = os.path.join(script_dir, './assets/fonts/futura.ttf')
 
 font = pygame.font.Font(futura_font, 64)
 font2 = pygame.font.Font(futura_font, 32) 
+
+
 def draw_text(text, font, color, surface, x, y):
     textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
@@ -52,6 +60,6 @@ def main_menu():
         mainClock.tick(60)
  
 def new_game():
+    #engine_exec.game()
     engine.game()
-
 main_menu()

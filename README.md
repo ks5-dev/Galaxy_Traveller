@@ -22,4 +22,23 @@ Anyways here is an screenshot of the game:
 
 ## Running the project
 Dependencies: pygame
+
 Run `menu.py` to start the game
+
+If you intend to create an executable, make the following change to `menu.py`
+Change the import line:
+`import pygame, sys, os, engine #engine_exec`
+to `import pygame, sys, os, engine_exec`
+and thus, the run game line:
+```
+def new_game():
+    #engine_exec.game()
+    engine.game()
+```    
+to 
+```
+def new_game():
+    engine_exec.game()
+```
+
+I include a linux executable this time.
