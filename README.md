@@ -21,7 +21,7 @@ Anyways here is an screenshot of the game:
 ![Screenshot](./demo/screenshot1.png)
 
 ## Running the project
-Dependencies: pygame
+Dependencies: `pygame` (`cx_freeze` if you want to build the game)
 
 Run `menu.py` to start the game
 
@@ -41,4 +41,4 @@ def new_game():
     engine_exec.game()
 ```
 
-I include a linux executable this time.
+Run `python setup.py build` and you will get an executable in `build` folder, just like the executable I included.
