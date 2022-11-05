@@ -1,4 +1,4 @@
-import pygame, sys, os, engine #engine_exec
+import pygame, sys, os, old_engine, engine
 from handle_score import receive_score
 from pygame.locals import *
 
@@ -60,6 +60,6 @@ def main_menu():
         mainClock.tick(60)
  
 def new_game():
-    #engine_exec.game()
+    #os.system("demo.py")
     engine.game()
 main_menu()
