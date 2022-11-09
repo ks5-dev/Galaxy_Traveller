@@ -154,6 +154,7 @@ class Enemy2(pygame.sprite.Sprite):
             player.health -= 2
             explosion()
             self.kill()
+        
         if self.health <= 0:
             self.kill()
             explosion()
@@ -421,6 +422,11 @@ class Projectile(pygame.sprite.Sprite):
 
             if self.pos.y > screen_rect.bottom or self.pos.y < screen_rect.top:
                 self.direction.y *= -1
+            
+            for wall in list_wall:
+                if self.rect.colliderect(wall):
+                    self.kill()
+                    
 
             next_pos = self.pos + self.direction * dt
         
@@ -428,7 +434,7 @@ class Projectile(pygame.sprite.Sprite):
             self.rect.center = self.pos
 
             for enemy in self.enemy:
-                if self.rect.colliderect(enemy):
+                if self.rect.colliderect(enemy) and isinstance(enemy, Enemy):
                     enemy.health -= 1
                     self.kill()
         
@@ -492,7 +498,7 @@ def game():
 
     RUNNING = True
     screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("Galaxy Traveller 2")
+    pygame.display.set_caption("Galaxy Traveller")
     enemy_spawn = pygame.time.set_timer(pygame.USEREVENT+3, 8000)
     bkg = pygame.image.load(bkg_sprite).convert_alpha()
     bkg = pygame.transform.scale(bkg,(800,600))
@@ -520,7 +526,6 @@ def game():
 
         sprites.update(events, dt)
         screen.blit(bkg,(0,0))
-        wall_group.draw(screen)
         sprites.draw(screen)
         boost_group.draw(screen)
         coin_group.draw(screen)
@@ -530,6 +535,7 @@ def game():
         enemies_type_2.draw(screen)
         enemies_type_2.update(player)
 
+        wall_group.draw(screen)
         scoretext = myfont.render("Coin = "+str(player.coin)+" Life points = " +str(player.health) +" Kills = "+str(kills), True, (225,225,225))
         screen.blit(scoretext, (10, 5))
         pygame.display.update()
