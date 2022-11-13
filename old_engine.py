@@ -73,7 +73,7 @@ def game():
     for wall in list_wall:
         wall_group.add(wall)
             
-    class Enemy(pygame.sprite.Sprite):
+    class Shooter(pygame.sprite.Sprite):
         def __init__(self):
             super().__init__()
             #self.image = pygame.Surface((32, 32))
@@ -128,9 +128,9 @@ def game():
                     self.groups()[0].add(Projectile2(self.rect.center, self.direction.normalize().rotate(270)))
 
     enemies_type_1 = pygame.sprite.Group()
-    enemies_type_1.add(Enemy())
+    enemies_type_1.add(Shooter())
 
-    class Enemy2(pygame.sprite.Sprite):
+    class Chaser(pygame.sprite.Sprite):
         def __init__(self):
             super().__init__()
             self.image = pygame.image.load(enemy2).convert_alpha()
@@ -161,7 +161,7 @@ def game():
                 death_count = pygame.time.set_timer(pygame.USEREVENT+7, 500, True)
                     
     enemies_type_2 = pygame.sprite.Group()
-    enemies_type_2.add(Enemy2())
+    enemies_type_2.add(Chaser())
 
     class Coin(pygame.sprite.Sprite):
         def __init__(self):
@@ -406,7 +406,7 @@ def game():
                     if self.rect.colliderect(wall):
                         self.kill()
                 for enemy in enemies_type_1:
-                    if self.rect.colliderect(enemy) and isinstance(enemy,Enemy):
+                    if self.rect.colliderect(enemy) and isinstance(enemy,Shooter):
                         enemy.health -= 1
                         self.kill()
                 for enemy in enemies_type_2:
@@ -432,7 +432,7 @@ def game():
                 self.rect.center = self.pos
 
                 for enemy in enemies_type_1:
-                    if self.rect.colliderect(enemy) and isinstance(enemy,Enemy):
+                    if self.rect.colliderect(enemy) and isinstance(enemy,Shooter):
                         enemy.health -= 1
                         self.kill()
                 for enemy in enemies_type_2:
@@ -484,8 +484,8 @@ def game():
                 if e.type == pygame.USEREVENT + 2 :
                     coin_group.add(Coin())
                 if e.type == pygame.USEREVENT + 3:
-                    enemies_type_1.add(Enemy())
-                    enemies_type_2.add(Enemy2())
+                    enemies_type_1.add(Shooter())
+                    enemies_type_2.add(Chaser())
                 if e.type == pygame.USEREVENT + 7:
                     kills += 1
 

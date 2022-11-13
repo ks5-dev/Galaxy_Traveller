@@ -57,6 +57,8 @@ screen = pygame.display.set_mode((800, 600))
 
 state = [pygame.image.load(spaceship).convert_alpha(), pygame.image.load(spaceship_accelerate).convert_alpha(),pygame.image.load(multishot).convert_alpha(),pygame.image.load(ricochet).convert_alpha()]
 
+#The wall props are : x_len, y_len, x_pos, y_pos in that order 
+
 list_wall = []
 for wall in wall_prop:
     list_wall.append(Wall(wall, wall_x, wall_y))
@@ -65,13 +67,13 @@ wall_group = pygame.sprite.Group()
 for wall in list_wall:
     wall_group.add(wall)
 
-'''
-    ------------------------- GAME CLASSES -------------------------
-'''
 
-# ------------------------- Enemy1 (attack by shooting) -------------------------
+#    ------------------------- GAME CLASSES -------------------------
 
-class Enemy(pygame.sprite.Sprite):
+
+# ------------------------- Shooter1 (attack by shooting) -------------------------
+
+class Shooter(pygame.sprite.Sprite):
     def __init__(self, PLAYER):
         super().__init__()
         #self.image = pygame.Surface((32, 32))
@@ -127,9 +129,9 @@ class Enemy(pygame.sprite.Sprite):
                 self.groups()[0].add(Projectile2(self.PLAYER,self.rect.center, self.direction.normalize().rotate(270)))
 
 
-# ------------------------- Enemy2 (attack by chasing players)) -------------------------
+# ------------------------- Chaser (attack by chasing players)) -------------------------
 
-class Enemy2(pygame.sprite.Sprite):
+class Chaser(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load(enemy2).convert_alpha()
@@ -141,8 +143,8 @@ class Enemy2(pygame.sprite.Sprite):
         self.cooldown = 2000
         for wall in list_wall:
             if wall.rect.colliderect(self.rect) :
-                self.pos.x = random.randint(0,800)
-                self.pos.y = random.randint(0,800)
+                self.pos.x = random.randint(0,0)
+                self.pos.y = random.randint(0,0)
                 self.rect.center = self.pos
     def update(self, player):
         direction = pygame.math.Vector2(player.rect.x - self.rect.x,player.rect.y - self.rect.y)
@@ -190,6 +192,26 @@ class Boost(pygame.sprite.Sprite):
                 self.pos.y = random.randint(0,600)
                 self.rect.center = self.pos
 
+def handle_boost(player_object, boost_object):
+    if player_object.rect.colliderect(boost_object):
+        boost_object.kill()
+        if boost_object.type == "multishot" :
+            activating_time = pygame.time.set_timer(pygame.USEREVENT+1,5000,True)
+            player_object.multishot = True
+            player_object.image = state[2]
+            player_object.org_image = player_object.image.copy()
+        elif boost_object.type == "accelerate" :
+            activating_time = pygame.time.set_timer(pygame.USEREVENT+4,5000,True)
+            player_object.image = state[1]
+            player_object.org_image = player_object.image.copy()
+            player_object.vel = 6
+        else :
+            activating_time = pygame.time.set_timer(pygame.USEREVENT+5,5000,True)
+            player_object.ricochet = True
+            player_object.image = state[3]
+            player_object.org_image = player_object.image.copy()
+
+# ------------------------- The player in control -------------------------
 class Player(pygame.sprite.Sprite):
     def __init__(self, COIN_GROUP, BOOST_GROUP, ENEMY_1, ENEMY_2):
         super().__init__()
@@ -249,23 +271,7 @@ class Player(pygame.sprite.Sprite):
                 if self.rect.colliderect(wall):
                     self.pos.x += self.vel   
             for i in self.BOOST_GROUP:
-                if self.rect.colliderect(i):
-                    i.kill()
-                    if i.type == "multishot" :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+1,5000,True)
-                        self.multishot = True
-                        self.image = state[2]
-                        self.org_image = self.image.copy()
-                    elif i.type == "accelerate" :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+4,5000,True)
-                        self.image = state[1]
-                        self.org_image = self.image.copy()
-                        self.vel = 6
-                    else :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+5,5000,True)
-                        self.ricochet = True
-                        self.image = state[3]
-                        self.org_image = self.image.copy()
+                handle_boost(self,i)
             for i in self.COIN_GROUP:
                 if self.rect.colliderect(i):
                     self.coin += 1
@@ -280,22 +286,7 @@ class Player(pygame.sprite.Sprite):
                     self.pos.x -= self.vel
             for i in self.BOOST_GROUP:
                 if self.rect.colliderect(i):
-                    i.kill()
-                    if i.type == "multishot" :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+1,5000,True)
-                        self.multishot = True
-                        self.image = state[2]
-                        self.org_image = self.image.copy()
-                    elif i.type == "accelerate" :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+4,5000,True)
-                        self.image = state[1]
-                        self.org_image = self.image.copy()
-                        self.vel = 6
-                    else :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+5,5000,True)
-                        self.ricochet = True
-                        self.image = state[3]
-                        self.org_image = self.image.copy()
+                    handle_boost(self,i)
             for i in self.COIN_GROUP:
                 if self.rect.colliderect(i):
                     self.coin += 1
@@ -309,23 +300,7 @@ class Player(pygame.sprite.Sprite):
                 if self.rect.colliderect(wall):
                     self.pos.y += self.vel
             for i in self.BOOST_GROUP:
-                if self.rect.colliderect(i):
-                    i.kill()
-                    if i.type == "multishot" :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+1,5000,True)
-                        self.image = state[2]
-                        self.org_image = self.image.copy()
-                        self.multishot = True
-                    elif i.type == "accelerate" :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+4,5000,True)
-                        self.image = state[1]
-                        self.org_image = self.image.copy()
-                        self.vel = 6
-                    else :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+5,5000,True)
-                        self.ricochet = True
-                        self.image = state[3]
-                        self.org_image = self.image.copy()
+                handle_boost(self, i)
 
             for i in self.COIN_GROUP:
                 if self.rect.colliderect(i):
@@ -341,26 +316,7 @@ class Player(pygame.sprite.Sprite):
                 if self.rect.colliderect(wall):
                     self.pos.y -= self.vel
             for i in self.BOOST_GROUP:
-                if self.rect.colliderect(i):
-                    i.kill()
-                    if i.type == "multishot" :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+1,5000,True)
-                        self.multishot = True
-                        self.image = state[2]
-                        self.org_image = self.image.copy()
-                        self.image.set_colorkey((30,30,30))
-                    elif i.type == "accelerate" :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+4,5000,True)
-                        self.image = state[1]
-                        self.org_image = self.image.copy()
-                        self.image.set_colorkey((30,30,30))
-                        self.vel = 6
-                    else :
-                        activating_time = pygame.time.set_timer(pygame.USEREVENT+5,5000,True)
-                        self.ricochet = True
-                        self.image = state[3]
-                        self.org_image = self.image.copy()
-                        self.image.set_colorkey((30,30,30))
+                handle_boost(self,i)
             for i in self.COIN_GROUP:
                 if self.rect.colliderect(i):
                     self.coin += 1
@@ -407,7 +363,7 @@ class Projectile(pygame.sprite.Sprite):
                 if self.rect.colliderect(wall):
                     self.kill()
             for enemy in self.enemy:
-                if self.rect.colliderect(enemy) and (isinstance(enemy, Enemy2) or isinstance(enemy, Enemy) ):
+                if self.rect.colliderect(enemy) and (isinstance(enemy, Chaser) or isinstance(enemy, Shooter) ):
                     enemy.health -= 1
                     self.kill()
         else :
@@ -434,12 +390,11 @@ class Projectile(pygame.sprite.Sprite):
             self.rect.center = self.pos
 
             for enemy in self.enemy:
-                if self.rect.colliderect(enemy) and isinstance(enemy, Enemy):
+                if self.rect.colliderect(enemy) and isinstance(enemy, Shooter):
                     enemy.health -= 1
                     self.kill()
         
 # ------------------------- Projectile 2 (shoot player only) -------------------------
-
 
 class Projectile2(pygame.sprite.Sprite):
     def __init__(self, PLAYER, pos, direction,size=(8,8)):
@@ -463,7 +418,6 @@ class Projectile2(pygame.sprite.Sprite):
             self.kill()
 
 def game():
-
     '''
     USEREVENT 
     0 :boost group
@@ -471,9 +425,6 @@ def game():
     2 coin group
     3 enemies
     '''
-    
-
-    #The wall props are : x_len, y_len, x_pos, y_pos in that order 
     
     enemies_type_1 = pygame.sprite.Group()
     enemies_type_2 = pygame.sprite.Group()
@@ -486,15 +437,11 @@ def game():
     sprites.add(player)
 
     
-    enemies_type_1.add(Enemy(player))
-    enemies_type_2.add(Enemy2())
+    enemies_type_1.add(Shooter(player))
+    enemies_type_2.add(Chaser())
     
     coin_group.add(Coin())    
     boost_group.add(Boost())
-
-    
-    
-
 
     RUNNING = True
     screen = pygame.display.set_mode((800, 600))
@@ -512,15 +459,15 @@ def game():
         events = pygame.event.get()
         for e in events:
             if e.type == pygame.QUIT or e.type == pygame.USEREVENT + 6:
-                write_score(player.coin+ kills*2)
+                write_score(player.coin + kills*2)
                 return pygame.QUIT
             if e.type == pygame.USEREVENT :
                 boost_group.add(Boost())
             if e.type == pygame.USEREVENT + 2 :
                 coin_group.add(Coin())
             if e.type == pygame.USEREVENT + 3:
-                enemies_type_1.add(Enemy(player))
-                enemies_type_2.add(Enemy2())
+                enemies_type_1.add(Shooter(player))
+                enemies_type_2.add(Chaser())
             if e.type == pygame.USEREVENT + 7:
                 kills += 1
 
