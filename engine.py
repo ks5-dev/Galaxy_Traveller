@@ -36,8 +36,8 @@ explosion_sound = os.path.join(script_dir, './assets/audio/explosion_sound.mp3')
 
 #Audio play function 
 def blast():
-        blast = pygame.mixer.Sound(blaster_sound)
-        blast.play()
+    blast = pygame.mixer.Sound(blaster_sound)
+    blast.play()
 def explosion():
     explosion = pygame.mixer.Sound(explosion_sound)
     explosion.play()
@@ -392,7 +392,7 @@ class Projectile(pygame.sprite.Sprite):
             self.rect.center = self.pos
 
             for enemy in self.enemy:
-                if self.rect.colliderect(enemy) and isinstance(enemy, Shooter):
+                if self.rect.colliderect(enemy) and isinstance(enemy, Shooter) or isinstance(enemy, Chaser):
                     enemy.health -= 1
                     self.kill()
         
