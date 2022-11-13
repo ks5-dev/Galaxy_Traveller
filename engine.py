@@ -54,7 +54,6 @@ screen_rect = pygame.Rect((0, 0), (800, 600))
 myfont = pygame.font.SysFont("monospace", 16)
 screen = pygame.display.set_mode((800, 600))
 
-
 state = [pygame.image.load(spaceship).convert_alpha(), pygame.image.load(spaceship_accelerate).convert_alpha(),pygame.image.load(multishot).convert_alpha(),pygame.image.load(ricochet).convert_alpha()]
 
 #The wall props are : x_len, y_len, x_pos, y_pos in that order 

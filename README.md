@@ -3,10 +3,10 @@ This is a small game I built with the pygame library for a science festival at m
 In this game, you control a spaceship. Your objective is to collect as many coins and kill as many enemy spaceships as possible. _The score is measured  by `coins + kills*2`_. 
 The player will have 10 hp but it can be increased by 1 for each 5 coins earned  
 There are two types of enemies:
-+ Type 1 - Shooter :the smaller one, capable of shooting in 4 directions (like a plus sign) if you are within its shooting range
-- Attr: dmg - 1 hp/bullet ; health - 1hp
-+ Type 2 - Chaser: the bigger one, capable of passing through walls, causing an explosion upon close contact
-- Attr: dmg - 2hp ; health - 2hp
++ Type 1 - Shooter :the smaller one, capable of shooting in 4 directions (like a plus sign) if you are within its shooting range. 
+Attr: dmg - 1 hp/bullet ; health - 1hp
++ Type 2 - Chaser: the bigger one, capable of passing through walls, causing an explosion upon close contact.
+Attr: dmg - 2hp ; health - 2hp
 There are also boosts to help you destroy your enemies easier:
 + Ricochet bullets (but won't bounce if they encounter a wall)
 + Multishot (3 bullets at once)
