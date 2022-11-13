@@ -9,9 +9,9 @@ Attr: dmg - 1 hp/bullet ; health - 1hp
 Attr: dmg - 2hp ; health - 2hp
 
 There are also boosts to help you destroy your enemies easier:
-+ Ricochet bullets (but won't bounce if they encounter a wall)
-+ Multishot (3 bullets at once)
-+ Super speed (x2 current speed)
++ Ricochet bullets :the number of bounces is reduced by 1 upon contacting with the wall but it is still able to pass through wall
++ Multishot: 3 bullets at once in 3 directions
++ Super speed: x2 speed (Max: 8)
 The boost item is spawned randomly and you can't tell which ability will be granted by the appearance of the item.
 I have finished this game a long time ago, but I am recently updating it to improve & fix small bugs.
 There is a `settings.json` file for you to change some attributes of the game.

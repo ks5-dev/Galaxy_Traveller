@@ -122,11 +122,14 @@ class Shooter(pygame.sprite.Sprite):
             now = pygame.time.get_ticks()
             if now - self.last >= self.cooldown:
                 self.last = now
-                self.groups()[0].add(Projectile2(self.PLAYER, self.rect.center, self.direction.normalize()))
-                self.groups()[0].add(Projectile2(self.PLAYER,self.rect.center, self.direction.normalize().rotate(90)))
-                self.groups()[0].add(Projectile2(self.PLAYER,self.rect.center, self.direction.normalize().rotate(180)))
-                self.groups()[0].add(Projectile2(self.PLAYER,self.rect.center, self.direction.normalize().rotate(270)))
-
+                try:
+                    self.groups()[0].add(Projectile2(self.PLAYER, self.rect.center, self.direction.normalize()))
+                    self.groups()[0].add(Projectile2(self.PLAYER,self.rect.center, self.direction.normalize().rotate(90)))
+                    self.groups()[0].add(Projectile2(self.PLAYER,self.rect.center, self.direction.normalize().rotate(180)))
+                    self.groups()[0].add(Projectile2(self.PLAYER,self.rect.center, self.direction.normalize().rotate(270)))
+                except IndexError as e: 
+                    print(e)
+                    pass
 
 # ------------------------- Chaser (attack by chasing players)) -------------------------
 
@@ -203,7 +206,7 @@ def handle_boost(player_object, boost_object):
             activating_time = pygame.time.set_timer(pygame.USEREVENT+4,5000,True)
             player_object.image = state[1]
             player_object.org_image = player_object.image.copy()
-            player_object.vel = 6
+            player_object.vel = 8
         else :
             activating_time = pygame.time.set_timer(pygame.USEREVENT+5,5000,True)
             player_object.ricochet = True
@@ -223,7 +226,7 @@ class Player(pygame.sprite.Sprite):
         self.multishot = False
         self.ricochet = False
         self.health = 10
-        self.vel = 3
+        self.vel = 4
         self.coin = 0
         self.last = 0
         self.COIN_GROUP = COIN_GROUP
@@ -252,7 +255,7 @@ class Player(pygame.sprite.Sprite):
                     self.image = state[0]
                     self.org_image = self.image.copy()
             if e.type == pygame.USEREVENT+4:
-                self.vel = 3
+                self.vel = 4
                 self.image = state[0]
                 self.org_image = self.image.copy()
             if e.type == pygame.USEREVENT+5:
@@ -380,7 +383,7 @@ class Projectile(pygame.sprite.Sprite):
             
             for wall in list_wall:
                 if self.rect.colliderect(wall):
-                    self.kill()
+                    self.bounce_num -= 1
                     
 
             next_pos = self.pos + self.direction * dt
