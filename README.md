@@ -7,6 +7,7 @@ There are two types of enemies:
 Attr: dmg - 1 hp/bullet ; health - 1hp
 + Type 2 - Chaser: the bigger one, capable of passing through walls, causing an explosion upon close contact.
 Attr: dmg - 2hp ; health - 2hp
+
 There are also boosts to help you destroy your enemies easier:
 + Ricochet bullets (but won't bounce if they encounter a wall)
 + Multishot (3 bullets at once)
